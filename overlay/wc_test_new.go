@@ -453,7 +453,7 @@ func TestUpdateImageRepositoryInKubeadmConfigMap(t *testing.T) {
 			w := &Workload{
 				Client: fakeClient,
 			}
-			err := w.UpdateClusterConfiguration(ctx, semver.MustParse("1.31.1"), w.UpdateImageRepositoryInKubeadmConfigMap(tt.newImageRepository))
+			err := w.UpdateClusterConfiguration(ctx, semver.MustParse("1.31.1"), w.UpdateImageRepositoryInKubeadmConfigMap(tt.newImageRepository, tt.newDNSImageRepository))
 			g.Expect(err).ToNot(HaveOccurred())
 
 			var actualConfig corev1.ConfigMap

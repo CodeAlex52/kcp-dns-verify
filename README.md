@@ -1,0 +1,1 @@
+RED/GREEN verification (cloud-only, disposable) for the KCP DNS.imageRepository config-map fix (#14267).

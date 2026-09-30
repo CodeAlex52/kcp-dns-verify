@@ -36,8 +36,8 @@ jobs:
       - name: Install envtest binaries
         run: |
           set -euo pipefail
-          go run sigs.k8s.io/controller-runtime/tools/setup-envtest@latest use 1.34.0 --bin-dir /usr/local/kubebuilder -p path
-          echo "KUBEBUILDER_ASSETS=$(go run sigs.k8s.io/controller-runtime/tools/setup-envtest@latest use 1.34.0 --bin-dir /usr/local/kubebuilder -p path)" >> "$GITHUB_ENV"
+          ASSETS=$(go run sigs.k8s.io/controller-runtime/tools/setup-envtest@latest use 1.34.0 -p path)
+          echo "KUBEBUILDER_ASSETS=$ASSETS" >> "$GITHUB_ENV"
       - name: Run DNS image repository regression test
         run: |
           set -euo pipefail

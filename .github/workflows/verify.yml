@@ -1,0 +1,37 @@
+name: kcp-dns-verify
+on:
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: "red (upstream workload_cluster.go) or green (fixed)"
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout upstream cluster-api at pinned SHA
+        uses: actions/checkout@v4
+        with:
+          repository: kubernetes-sigs/cluster-api
+          ref: c1c9e9b31bba9c1d0d2b90dbf6481cd8ce15ef2e
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Overlay files
+        run: |
+          set -euo pipefail
+          VARIANT=${{ inputs.variant }}
+          BASE=https://raw.githubusercontent.com/CodeAlex52/kcp-dns-verify/main
+          fetch() { gh api "repos/CodeAlex52/kcp-dns-verify/contents/overlay/$1?ref=main" --jq .content | base64 -d; }
+          fetch workload_cluster.go > controlplane/kubeadm/pkg/workload_cluster.go
+          if [ "$VARIANT" = "green" ]; then
+            fetch workload_cluster_fixed.go > controlplane/kubeadm/pkg/workload_cluster.go
+          fi
+          fetch kcp_update_fixed.go > controlplane/kubeadm/reconcilers/kubeadmcontrolplane/update.go
+          fetch wc_test_new.go > controlplane/kubeadm/pkg/workload_cluster_test.go
+      - name: Run DNS image repository regression test
+        run: |
+          set -euo pipefail
+          go test ./controlplane/kubeadm/pkg/ -run TestUpdateImageRepositoryInKubeadmConfigMap -v 2>&1 | tee kcp-dns.log

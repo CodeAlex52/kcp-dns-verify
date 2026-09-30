@@ -405,6 +405,8 @@ func TestUpdateImageRepositoryInKubeadmConfigMap(t *testing.T) {
 		clusterConfigurationData string
 		newImageRepository       string
 		wantImageRepository      string
+		newDNSImageRepository    string
+		wantDNSImageRepository   string
 	}{
 		{
 			name: "it should set the image repository",
